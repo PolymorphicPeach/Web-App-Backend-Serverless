@@ -13,12 +13,6 @@ import static java.util.Map.entry;
 
 public class Main implements RequestHandler<Map<String,Object>, APIGatewayProxyResponseEvent> {
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final Map<String, String> CORSHeaders = Map.ofEntries(
-            entry("Content-Type", "application/json"),
-            entry("Access-Control-Allow-Origin", "*"),
-            entry("Access-Control-Allow-Methods", "GET, POST, OPTIONS"),
-            entry("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    );
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(Map<String, Object> event, Context context) {
@@ -29,14 +23,12 @@ public class Main implements RequestHandler<Map<String,Object>, APIGatewayProxyR
         try{
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(200)
-                    .withHeaders(CORSHeaders)
                     .withBody(objectMapper.writeValueAsString(ciphertext))
                     .withIsBase64Encoded(false);
         }
         catch(JsonProcessingException e){
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(502)
-                    .withHeaders(CORSHeaders)
                     .withBody("")
                     .withIsBase64Encoded(false);
         }

@@ -51,17 +51,6 @@ public class Main implements RequestHandler<Map<String, Object>, APIGatewayProxy
                     .queryConditional(partitionEqual)
                     .build();
 
-    // Ok, apparently using proxy integration in API Gateway then enabling CORS
-    // through the dashboard doesn't work, so I do it here.
-    // (Why is it even presented as an option...?)
-    // https://stackoverflow.com/questions/38987256/aws-api-gateway-cors-post-not-working
-    private final Map<String, String> CORSHeaders = Map.ofEntries(
-            entry("Content-Type", "application/json"),
-            entry("Access-Control-Allow-Origin", "*"),
-            entry("Access-Control-Allow-Methods", "GET, POST, OPTIONS"),
-            entry("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    );
-
     @Override
     public APIGatewayProxyResponseEvent handleRequest(Map<String, Object> event, Context context) {
         // https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/enhanced/dynamodb/model/PageIterable.html
@@ -75,14 +64,12 @@ public class Main implements RequestHandler<Map<String, Object>, APIGatewayProxy
         try {
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(200)
-                    .withHeaders(CORSHeaders)
                     .withBody(objectMapper.writeValueAsString(projectMap))
                     .withIsBase64Encoded(false);
         }
         catch (JsonProcessingException e) {
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(502)
-                    .withHeaders(CORSHeaders)
                     .withBody("")
                     .withIsBase64Encoded(false);
         }
